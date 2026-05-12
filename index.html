@@ -54,9 +54,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global environment variables
+        // Firebase Configuration
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -86,12 +86,10 @@
             document.getElementById('current-date-display').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 (${days[now.getDay()]})`;
         }
 
-        // Firestore Path Helper (RULE 1: Must be /artifacts/{appId}/public/data/{collectionName})
-        // Correction: The path must be interpreted as collection / document / collection / document...
-        // To fix "must have an odd number of segments", we must ensure we use collection() for 5 segments
-        // Path: artifacts (1) / {appId} (2) / public (3) / data (4) / {syncKey} (5)
-        const getTankCollection = () => {
-            return collection(db, 'artifacts', appId, 'public', 'data', syncKey);
+        // Firestore Path Helper (5 segments for a Document = artifacts/appId/public/data/syncKey/tankId)
+        // This ensures the parent is a collection (odd segments: 1, 3, 5)
+        const getTankDocRef = (index) => {
+            return doc(db, 'artifacts', appId, 'public', 'data', syncKey, `tank_${index}`);
         };
 
         window.saveData = async (index) => {
@@ -106,8 +104,7 @@
                 updatedAt: new Date().toISOString()
             };
             try {
-                // Rule: Save to doc under the specific syncKey collection
-                await setDoc(doc(getTankCollection(), `tank_${index}`), data, { merge: true });
+                await setDoc(getTankDocRef(index), data, { merge: true });
             } catch (e) { 
                 console.error("Save Error:", e); 
             }
@@ -176,12 +173,12 @@
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // Corrected: Watch the specific collection for the syncKey
-                    const colRef = getTankCollection();
+                    // Watch the collection: artifacts/{appId}/public/data/{syncKey}
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', syncKey);
                     
                     onSnapshot(colRef, (snap) => {
                         snap.docChanges().forEach(change => {
-                            const docId = change.doc.id; // docId is "tank_0", "tank_1", etc.
+                            const docId = change.doc.id; 
                             if (docId.startsWith('tank_')) {
                                 const idx = parseInt(docId.split('_').pop());
                                 const data = change.doc.data();
