@@ -15,9 +15,8 @@
         body { font-family: 'Kiwi Maru', serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
         .unagi-card { transition: all 0.2s ease; }
         input, textarea { font-size: 16px !important; }
-        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200; backdrop-filter: blur(4px); }
-        /* Chrome, Safari, Edge, Opera の入力矢印を消す */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
@@ -25,9 +24,10 @@
 <body class="p-4 md:p-10 text-slate-800">
     <div id="loading" class="loading-overlay">
         <div class="text-center">
-            <div class="inline-block w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p id="loading-text" class="text-xs font-bold text-slate-500 tracking-widest uppercase">同期中...</p>
-            <button id="force-close-loader" onclick="hideLoader()" class="mt-6 text-[10px] text-slate-400 underline hidden">強制的に開始する</button>
+            <div class="inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+            <p id="loading-text" class="text-sm font-bold text-slate-600 tracking-widest">データベースに接続中...</p>
+            <p id="error-display" class="text-red-500 text-xs mt-4 hidden font-bold"></p>
+            <button id="force-close-loader" onclick="hideLoader()" class="mt-8 text-xs text-blue-500 underline hidden">オフラインで開始する</button>
         </div>
     </div>
 
@@ -49,8 +49,8 @@
             <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-1">うなぎ仔魚日齢管理</h1>
             <div id="current-date-display" class="text-sm md:text-lg font-bold text-blue-600">----/--/--</div>
             <div id="sync-status" class="text-[9px] text-slate-400 font-bold mt-2 uppercase tracking-widest flex items-center justify-center gap-2">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                合言葉: <span id="active-key-name" class="text-slate-600">unagi</span>
+                <span id="status-indicator" class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                合言葉: <span id="active-key-name" class="text-slate-600">--</span>
             </div>
         </header>
 
@@ -59,59 +59,63 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration from environment
+        // Global State
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'unagi-shared-v10';
-        
-        // Sync Logic
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'unagi-v11';
         let syncKey = localStorage.getItem('unagi_sync_key') || 'unagi';
         const tankCount = 10;
 
+        // UI Themes
+        const colorThemes = [
+            { border: '#3b82f6', bg: '#eff6ff', text: '#1d4ed8' },
+            { border: '#10b981', bg: '#ecfdf5', text: '#047857' },
+            { border: '#6366f1', bg: '#eef2ff', text: '#4338ca' },
+            { border: '#8b5cf6', bg: '#f5f3ff', text: '#6d28d9' },
+            { border: '#f43f5e', bg: '#fff1f2', text: '#be123c' },
+            { border: '#f59e0b', bg: '#fffbeb', text: '#b45309' },
+            { border: '#06b6d4', bg: '#ecfeff', text: '#0e7490' },
+            { border: '#14b8a6', bg: '#f0fdfa', text: '#0f766e' },
+            { border: '#d946ef', bg: '#fdf4ff', text: '#a21caf' },
+            { border: '#64748b', bg: '#f8fafc', text: '#334155' }
+        ];
+
         window.hideLoader = () => {
-            document.getElementById('loading').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-            }, 300);
+            const loader = document.getElementById('loading');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 300);
         };
 
-        window.showSyncModal = () => { 
+        window.showSyncModal = () => {
             document.getElementById('sync-key-input').value = syncKey;
-            document.getElementById('sync-modal').style.display = 'flex'; 
+            document.getElementById('sync-modal').style.display = 'flex';
         };
 
-        window.hideSyncModal = () => { 
-            document.getElementById('sync-modal').style.display = 'none'; 
+        window.hideSyncModal = () => {
+            document.getElementById('sync-modal').style.display = 'none';
         };
 
         window.saveSyncKey = () => {
-            const val = document.getElementById('sync-key-input').value.trim();
-            if(val) {
+            const val = document.getElementById('sync-key-input').value.trim().replace(/\//g, '-');
+            if (val) {
                 localStorage.setItem('unagi_sync_key', val);
                 location.reload();
             }
         };
 
-        const getTankDocRef = (index) => {
-            // Path: artifacts/{appId}/public/data/{syncKey}/{tankId}
-            return doc(db, 'artifacts', appId, 'public', 'data', syncKey, `tank_${index}`);
-        };
-
-        // UI update based on date
         const calculateAge = (birthDateStr) => {
             if (!birthDateStr) return "--";
             const bDate = new Date(birthDateStr);
             bDate.setHours(0,0,0,0);
             const today = new Date();
             today.setHours(0,0,0,0);
-            const diffTime = today - bDate;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            return Math.max(0, diffDays);
+            const diffDays = Math.floor((today - bDate) / (1000 * 60 * 60 * 24));
+            return isNaN(diffDays) ? "--" : Math.max(0, diffDays);
         };
 
         window.saveData = async (index) => {
@@ -126,36 +130,23 @@
                 updatedAt: new Date().toISOString()
             };
 
-            try {
-                // 即座に計算してUIを更新（楽観的UI更新）
-                const age = calculateAge(data.birthDate);
-                el(`age-${index}`).innerText = age;
-                const iV = parseFloat(data.initial) || 0;
-                const cV = parseFloat(data.currentCount) || 0;
-                el(`rate-${index}`).innerText = (iV > 0 ? (cV/iV*100) : 0).toFixed(1) + "%";
+            // Local Update
+            el(`age-${index}`).innerText = calculateAge(data.birthDate);
+            const iV = parseFloat(data.initial) || 0;
+            const cV = parseFloat(data.currentCount) || 0;
+            el(`rate-${index}`).innerText = (iV > 0 ? (cV/iV*100) : 0).toFixed(1) + "%";
 
-                // Firebaseへ保存
-                await setDoc(getTankDocRef(index), data, { merge: true });
+            // Firestore Update
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', syncKey, `tank_${index}`);
+                await setDoc(docRef, data, { merge: true });
             } catch (e) {
-                console.error("Firestore Save Error:", e);
+                console.error("Save Error:", e);
             }
         };
 
         function createUI() {
             const container = document.getElementById('tanks-container');
-            const colorThemes = [
-                { border: '#3b82f6', bg: '#eff6ff', text: '#1d4ed8' }, // Blue
-                { border: '#10b981', bg: '#ecfdf5', text: '#047857' }, // Emerald
-                { border: '#6366f1', bg: '#eef2ff', text: '#4338ca' }, // Indigo
-                { border: '#8b5cf6', bg: '#f5f3ff', text: '#6d28d9' }, // Violet
-                { border: '#f43f5e', bg: '#fff1f2', text: '#be123c' }, // Rose
-                { border: '#f59e0b', bg: '#fffbeb', text: '#b45309' }, // Amber
-                { border: '#06b6d4', bg: '#ecfeff', text: '#0e7490' }, // Cyan
-                { border: '#14b8a6', bg: '#f0fdfa', text: '#0f766e' }, // Teal
-                { border: '#d946ef', bg: '#fdf4ff', text: '#a21caf' }, // Fuchsia
-                { border: '#64748b', bg: '#f8fafc', text: '#334155' }  // Slate
-            ];
-
             let html = '';
             for (let i = 0; i < tankCount; i++) {
                 const theme = colorThemes[i % colorThemes.length];
@@ -168,34 +159,28 @@
                                onchange="saveData(${i})">
                         <div class="w-2 h-2 rounded-full" style="background-color: ${theme.border}"></div>
                     </div>
-
                     <div class="space-y-4">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="text-[9px] font-bold text-slate-400 ml-1 mb-1 block">投入数</label>
+                                <label class="text-[9px] font-bold text-slate-400 ml-1 mb-1 block uppercase">Input</label>
                                 <input type="number" id="initial-${i}" placeholder="0" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-sm font-bold border-none focus:bg-white transition-colors outline-none" oninput="saveData(${i})">
                             </div>
                             <div>
-                                <label class="text-[9px] font-bold text-slate-400 ml-1 mb-1 block">生存数</label>
-                                <input type="number" id="current-count-${i}" placeholder="0" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-sm font-bold border-none focus:bg-white transition-colors outline-none" oninput="saveInputWithValidation(${i})">
+                                <label class="text-[9px] font-bold text-slate-400 ml-1 mb-1 block uppercase">Alive</label>
+                                <input type="number" id="current-count-${i}" placeholder="0" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-sm font-bold border-none focus:bg-white transition-colors outline-none" oninput="saveData(${i})">
                             </div>
                         </div>
-
                         <div class="flex justify-between items-center p-3 rounded-xl border border-slate-100" style="background-color: ${theme.bg}22">
                             <span class="text-[10px] font-bold text-slate-400">生存率</span>
                             <span id="rate-${i}" class="font-black text-sm" style="color: ${theme.text}">0.0%</span>
                         </div>
-
                         <div>
                             <label class="text-[9px] font-bold text-slate-400 ml-1 mb-1 block">生誕日</label>
                             <input type="date" id="date-${i}" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-xs border-none outline-none" onchange="saveData(${i})">
                         </div>
-
                         <input type="text" id="origin-${i}" placeholder="生誕地/由来" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-xs border-none outline-none" onchange="saveData(${i})">
-                        
                         <textarea id="note-${i}" rows="2" placeholder="メモ..." class="w-full bg-slate-50 rounded-xl px-3 py-2 text-[11px] border-none resize-none outline-none" onchange="saveData(${i})"></textarea>
                     </div>
-
                     <div class="mt-auto pt-2">
                         <div class="text-center py-5 rounded-2xl border" style="border-color: ${theme.bg}; background: linear-gradient(135deg, #fff, ${theme.bg}88)">
                             <div id="age-${i}" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
@@ -207,74 +192,40 @@
             container.innerHTML = html;
         }
 
-        window.saveInputWithValidation = (i) => {
-            // 数値が変更されるたびに保存すると負荷がかかるため、入力中のバリデーションのみ
-            const initial = parseFloat(document.getElementById(`initial-${i}`).value) || 0;
-            const current = parseFloat(document.getElementById(`current-count-${i}`).value) || 0;
-            if (current > initial && initial > 0) {
-                // 生存数が投入数を超えた場合は赤くするなど視覚的フィードバック
-                document.getElementById(`current-count-${i}`).classList.add('text-red-500');
-            } else {
-                document.getElementById(`current-count-${i}`).classList.remove('text-red-500');
-            }
-            saveData(i);
-        };
-
-        async function startApp() {
-            document.getElementById('active-key-name').innerText = syncKey;
-            
-            // バックアップ: もし5秒経っても同期が終わらなければ「強制終了ボタン」を出す
-            setTimeout(() => {
-                const btn = document.getElementById('force-close-loader');
-                if (btn) btn.classList.remove('hidden');
-                document.getElementById('loading-text').innerText = '接続に時間がかかっています...';
-            }, 5000);
-
+        async function initAuth() {
             try {
-                let user;
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    const result = await signInWithCustomToken(auth, __initial_auth_token);
-                    user = result.user;
+                    await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
-                    const result = await signInAnonymously(auth);
-                    user = result.user;
+                    await signInAnonymously(auth);
                 }
-                console.log("Authenticated as:", user.uid);
-
-                // Auth状態の監視
-                onAuthStateChanged(auth, (currentUser) => {
-                    if (currentUser) {
-                        setupRealtimeSync();
-                    } else {
-                        console.error("Auth Lost");
-                        document.getElementById('loading-text').innerText = '認証エラーが発生しました';
-                    }
-                });
-
-            } catch (err) {
-                console.error("Auth Error:", err);
-                hideLoader();
+                return true;
+            } catch (e) {
+                console.error("Auth Error:", e);
+                document.getElementById('error-display').innerText = "認証に失敗しました。再読み込みしてください。";
+                document.getElementById('error-display').classList.remove('hidden');
+                return false;
             }
         }
 
-        function setupRealtimeSync() {
+        function startSync() {
             const colRef = collection(db, 'artifacts', appId, 'public', 'data', syncKey);
             
-            // スナップショットの購読
+            // Initial data fetch and watch
             const unsubscribe = onSnapshot(colRef, (snap) => {
-                console.log("Data received, count:", snap.size);
+                document.getElementById('status-indicator').classList.replace('bg-slate-300', 'bg-green-400');
+                document.getElementById('status-indicator').classList.add('animate-pulse');
                 
                 snap.docChanges().forEach(change => {
-                    const docId = change.doc.id; 
+                    const docId = change.doc.id;
                     if (docId.startsWith('tank_')) {
                         const idx = parseInt(docId.split('_').pop());
                         if (isNaN(idx) || idx >= tankCount) return;
 
                         const data = change.doc.data();
                         const el = (id) => document.getElementById(id);
-                        if (!el(`tank-label-${idx}`)) return;
-
-                        // 入力中のフィールドは上書きしない（フォーカス時を避ける）
+                        
+                        // Prevent overwriting active inputs
                         if (document.activeElement !== el(`tank-label-${idx}`)) el(`tank-label-${idx}`).value = data.tankLabel || `Tank ${String(idx+1).padStart(2,'0')}`;
                         if (document.activeElement !== el(`initial-${idx}`)) el(`initial-${idx}`).value = data.initial || "";
                         if (document.activeElement !== el(`current-count-${idx}`)) el(`current-count-${idx}`).value = data.currentCount || "";
@@ -282,34 +233,43 @@
                         if (document.activeElement !== el(`origin-${idx}`)) el(`origin-${idx}`).value = data.origin || "";
                         if (document.activeElement !== el(`note-${idx}`)) el(`note-${idx}`).value = data.note || "";
                         
-                        // 表示専用データの更新
-                        const age = calculateAge(data.birthDate);
-                        el(`age-${idx}`).innerText = age;
-                        const iV = parseFloat(data.initial) || 0;
-                        const cV = parseFloat(data.currentCount) || 0;
+                        // Update calculated fields
+                        el(`age-${idx}`).innerText = calculateAge(data.birthDate);
+                        const iV = parseFloat(data.initial) || 0, cV = parseFloat(data.currentCount) || 0;
                         el(`rate-${idx}`).innerText = (iV > 0 ? (cV/iV*100) : 0).toFixed(1) + "%";
                     }
                 });
-
-                // 最初の読み込みが完了したらローダーを隠す
+                
                 hideLoader();
-            }, (error) => {
-                console.error("Firestore Error:", error);
-                hideLoader(); // エラー時もとりあえず画面は見せる
+            }, (err) => {
+                console.error("Snapshot Error:", err);
+                hideLoader();
             });
         }
 
-        // 日付表示
         function displayToday() {
             const now = new Date();
             const days = ['日', '月', '火', '水', '木', '金', '土'];
             document.getElementById('current-date-display').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 (${days[now.getDay()]})`;
         }
 
-        window.onload = () => {
+        window.onload = async () => {
             displayToday();
             createUI();
-            startApp();
+            document.getElementById('active-key-name').innerText = syncKey;
+
+            // Timeout fallback
+            setTimeout(() => {
+                document.getElementById('force-close-loader').classList.remove('hidden');
+                document.getElementById('loading-text').innerText = "通信に時間がかかっています...";
+            }, 6000);
+
+            const authSuccess = await initAuth();
+            if (authSuccess) {
+                onAuthStateChanged(auth, (user) => {
+                    if (user) startSync();
+                });
+            }
         };
     </script>
 </body>
