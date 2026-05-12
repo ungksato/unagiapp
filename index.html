@@ -1,642 +1,100 @@
 <!DOCTYPE html>
-<!-- saved from url=(0166)file:///C:/Users/101070/Documents/%E4%B8%80%E6%99%82%E4%BF%9D%E5%AD%98%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB/%E4%BB%94%E9%AD%9A%E6%97%A5%E9%BD%A2%E7%AE%A1%E7%90%86.html -->
-<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>うなぎ管理 - クラウド共有版</title>
     
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>うなぎ仔魚日齢管理 - Leptocephalus Tracker</title>
-    <script src="./うなぎ仔魚日齢管理 - Leptocephalus Tracker_files/saved_resource"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2614/2614364.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500;600&display=swap');
-        
-        body {
-            font-family: 'Kiwi Maru', serif;
-            background-color: #f1f5f9;
-        }
-
-        .unagi-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .unagi-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            cursor: pointer;
-            opacity: 0.6;
-        }
+        body { font-family: 'Kiwi Maru', serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
+        .unagi-card { transition: all 0.2s ease; }
+        input, textarea { font-size: 16px !important; }
+        .loading-overlay { position: fixed; inset: 0; background: #ffffff; display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200; backdrop-filter: blur(4px); }
     </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-12{margin-bottom:3rem}.mb-2{margin-bottom:0.5rem}.mb-6{margin-bottom:1.5rem}.mt-20{margin-top:5rem}.mb-1{margin-bottom:0.25rem}.mb-5{margin-bottom:1.25rem}.mt-1{margin-top:0.25rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.h-2{height:0.5rem}.w-2{width:0.5rem}.w-28{width:7rem}.w-full{width:100%}.max-w-\[1600px\]{max-width:1600px}.flex-grow{flex-grow:1}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.resize-none{resize:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-6{gap:1.5rem}.gap-3{gap:0.75rem}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.rounded-full{border-radius:9999px}.rounded-2xl{border-radius:1rem}.rounded-\[2rem\]{border-radius:2rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-none{border-style:none}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-amber-50{--tw-border-opacity:1;border-color:rgb(255 251 235 / var(--tw-border-opacity, 1))}.border-blue-50{--tw-border-opacity:1;border-color:rgb(239 246 255 / var(--tw-border-opacity, 1))}.border-cyan-50{--tw-border-opacity:1;border-color:rgb(236 254 255 / var(--tw-border-opacity, 1))}.border-emerald-50{--tw-border-opacity:1;border-color:rgb(236 253 245 / var(--tw-border-opacity, 1))}.border-fuchsia-50{--tw-border-opacity:1;border-color:rgb(253 244 255 / var(--tw-border-opacity, 1))}.border-indigo-50{--tw-border-opacity:1;border-color:rgb(238 242 255 / var(--tw-border-opacity, 1))}.border-rose-50{--tw-border-opacity:1;border-color:rgb(255 241 242 / var(--tw-border-opacity, 1))}.border-slate-50{--tw-border-opacity:1;border-color:rgb(248 250 252 / var(--tw-border-opacity, 1))}.border-teal-50{--tw-border-opacity:1;border-color:rgb(240 253 250 / var(--tw-border-opacity, 1))}.border-violet-50{--tw-border-opacity:1;border-color:rgb(245 243 255 / var(--tw-border-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-amber-50\/50{background-color:rgb(255 251 235 / 0.5)}.bg-blue-400{--tw-bg-opacity:1;background-color:rgb(96 165 250 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-50\/50{background-color:rgb(239 246 255 / 0.5)}.bg-cyan-400{--tw-bg-opacity:1;background-color:rgb(34 211 238 / var(--tw-bg-opacity, 1))}.bg-cyan-50{--tw-bg-opacity:1;background-color:rgb(236 254 255 / var(--tw-bg-opacity, 1))}.bg-cyan-50\/50{background-color:rgb(236 254 255 / 0.5)}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.bg-emerald-50\/50{background-color:rgb(236 253 245 / 0.5)}.bg-fuchsia-400{--tw-bg-opacity:1;background-color:rgb(232 121 249 / var(--tw-bg-opacity, 1))}.bg-fuchsia-50{--tw-bg-opacity:1;background-color:rgb(253 244 255 / var(--tw-bg-opacity, 1))}.bg-fuchsia-50\/50{background-color:rgb(253 244 255 / 0.5)}.bg-indigo-400{--tw-bg-opacity:1;background-color:rgb(129 140 248 / var(--tw-bg-opacity, 1))}.bg-indigo-50{--tw-bg-opacity:1;background-color:rgb(238 242 255 / var(--tw-bg-opacity, 1))}.bg-indigo-50\/50{background-color:rgb(238 242 255 / 0.5)}.bg-rose-400{--tw-bg-opacity:1;background-color:rgb(251 113 133 / var(--tw-bg-opacity, 1))}.bg-rose-50{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.bg-rose-50\/50{background-color:rgb(255 241 242 / 0.5)}.bg-slate-400{--tw-bg-opacity:1;background-color:rgb(148 163 184 / var(--tw-bg-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slate-50\/50{background-color:rgb(248 250 252 / 0.5)}.bg-teal-400{--tw-bg-opacity:1;background-color:rgb(45 212 191 / var(--tw-bg-opacity, 1))}.bg-teal-50{--tw-bg-opacity:1;background-color:rgb(240 253 250 / var(--tw-bg-opacity, 1))}.bg-teal-50\/50{background-color:rgb(240 253 250 / 0.5)}.bg-violet-400{--tw-bg-opacity:1;background-color:rgb(167 139 250 / var(--tw-bg-opacity, 1))}.bg-violet-50{--tw-bg-opacity:1;background-color:rgb(245 243 255 / var(--tw-bg-opacity, 1))}.bg-violet-50\/50{background-color:rgb(245 243 255 / 0.5)}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.from-white{--tw-gradient-from:#fff var(--tw-gradient-from-position);--tw-gradient-to:rgb(255 255 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-amber-50\/30{--tw-gradient-to:rgb(255 251 235 / 0.3) var(--tw-gradient-to-position)}.to-blue-50\/30{--tw-gradient-to:rgb(239 246 255 / 0.3) var(--tw-gradient-to-position)}.to-cyan-50\/30{--tw-gradient-to:rgb(236 254 255 / 0.3) var(--tw-gradient-to-position)}.to-emerald-50\/30{--tw-gradient-to:rgb(236 253 245 / 0.3) var(--tw-gradient-to-position)}.to-fuchsia-50\/30{--tw-gradient-to:rgb(253 244 255 / 0.3) var(--tw-gradient-to-position)}.to-indigo-50\/30{--tw-gradient-to:rgb(238 242 255 / 0.3) var(--tw-gradient-to-position)}.to-rose-50\/30{--tw-gradient-to:rgb(255 241 242 / 0.3) var(--tw-gradient-to-position)}.to-slate-50\/30{--tw-gradient-to:rgb(248 250 252 / 0.3) var(--tw-gradient-to-position)}.to-teal-50\/30{--tw-gradient-to:rgb(240 253 250 / 0.3) var(--tw-gradient-to-position)}.to-violet-50\/30{--tw-gradient-to:rgb(245 243 255 / 0.3) var(--tw-gradient-to-position)}.p-4{padding:1rem}.p-2{padding:0.5rem}.p-5{padding:1.25rem}.px-8{padding-left:2rem;padding-right:2rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.text-center{text-align:center}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-black{font-weight:900}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-tight{letter-spacing:-0.025em}.tracking-widest{letter-spacing:0.1em}.tracking-tighter{letter-spacing:-0.05em}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-amber-500{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-blue-500{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}.text-cyan-500{--tw-text-opacity:1;color:rgb(6 182 212 / var(--tw-text-opacity, 1))}.text-cyan-600{--tw-text-opacity:1;color:rgb(8 145 178 / var(--tw-text-opacity, 1))}.text-emerald-500{--tw-text-opacity:1;color:rgb(16 185 129 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-fuchsia-500{--tw-text-opacity:1;color:rgb(217 70 239 / var(--tw-text-opacity, 1))}.text-fuchsia-600{--tw-text-opacity:1;color:rgb(192 38 211 / var(--tw-text-opacity, 1))}.text-indigo-500{--tw-text-opacity:1;color:rgb(99 102 241 / var(--tw-text-opacity, 1))}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.text-rose-500{--tw-text-opacity:1;color:rgb(244 63 94 / var(--tw-text-opacity, 1))}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-teal-500{--tw-text-opacity:1;color:rgb(20 184 166 / var(--tw-text-opacity, 1))}.text-teal-600{--tw-text-opacity:1;color:rgb(13 148 136 / var(--tw-text-opacity, 1))}.text-violet-500{--tw-text-opacity:1;color:rgb(139 92 246 / var(--tw-text-opacity, 1))}.text-violet-600{--tw-text-opacity:1;color:rgb(124 58 237 / var(--tw-text-opacity, 1))}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-amber-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(254 243 199 / var(--tw-ring-opacity, 1))}.focus\:ring-amber-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(253 230 138 / var(--tw-ring-opacity, 1))}.focus\:ring-blue-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(219 234 254 / var(--tw-ring-opacity, 1))}.focus\:ring-blue-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(191 219 254 / var(--tw-ring-opacity, 1))}.focus\:ring-cyan-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(207 250 254 / var(--tw-ring-opacity, 1))}.focus\:ring-cyan-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(165 243 252 / var(--tw-ring-opacity, 1))}.focus\:ring-emerald-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(209 250 229 / var(--tw-ring-opacity, 1))}.focus\:ring-emerald-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(167 243 208 / var(--tw-ring-opacity, 1))}.focus\:ring-fuchsia-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(250 232 255 / var(--tw-ring-opacity, 1))}.focus\:ring-fuchsia-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(245 208 254 / var(--tw-ring-opacity, 1))}.focus\:ring-indigo-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(224 231 255 / var(--tw-ring-opacity, 1))}.focus\:ring-indigo-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(199 210 254 / var(--tw-ring-opacity, 1))}.focus\:ring-rose-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(255 228 230 / var(--tw-ring-opacity, 1))}.focus\:ring-rose-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(254 205 211 / var(--tw-ring-opacity, 1))}.focus\:ring-slate-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(241 245 249 / var(--tw-ring-opacity, 1))}.focus\:ring-slate-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(226 232 240 / var(--tw-ring-opacity, 1))}.focus\:ring-teal-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(204 251 241 / var(--tw-ring-opacity, 1))}.focus\:ring-teal-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(153 246 228 / var(--tw-ring-opacity, 1))}.focus\:ring-violet-100:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(237 233 254 / var(--tw-ring-opacity, 1))}.focus\:ring-violet-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(221 214 254 / var(--tw-ring-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:p-10{padding:2.5rem}}@media (min-width: 1024px){.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}@media (min-width: 1280px){.xl\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}}@media (min-width: 1536px){.\32xl\:grid-cols-5{grid-template-columns:repeat(5, minmax(0, 1fr))}}</style></head>
+</head>
 <body class="p-4 md:p-10 text-slate-800">
-    <div class="max-w-[1600px] mx-auto">
-        <!-- Header -->
-        <header class="text-center mb-12">
-            <div class="flex justify-center mb-6">
-                <svg width="100" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 30C25 10 45 50 65 30C85 10 105 35 115 30" stroke="#0f172a" stroke-width="3" stroke-linecap="round" fill="none"></path>
-                    <path d="M60 25C75 15 95 25 115 30C95 35 75 45 60 35" fill="#64748b" fill-opacity="0.2"></path>
-                    <circle cx="15" cy="28" r="1.5" fill="#0f172a"></circle>
-                </svg>
-            </div>
-            <h1 class="text-4xl font-bold tracking-tight text-slate-900 mb-2">うなぎ仔魚日齢管理</h1>
-            <div class="flex items-center justify-center space-x-2 text-slate-500">
-                <span class="text-sm font-medium uppercase tracking-widest">Today:</span>
-                <span id="current-date-display" class="text-lg font-bold text-blue-600">2026年05月11日 (月)</span>
-            </div>
-        </header>
-
-        <!-- Main Grid -->
-        <div id="tanks-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-            <!-- タンクのカードがここに動的に生成されます -->
-        
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-0" value="Tank 01" class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-blue-200 w-28" oninput="saveData(0)">
-                            <div class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-0" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-blue-100 transition-all" oninput="updateSurvival(0)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-0" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-blue-100 transition-all" oninput="updateSurvival(0)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-blue-50/50 p-2 rounded-xl border border-blue-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-0" class="text-sm font-bold text-blue-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-0" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-blue-100 transition-all" onchange="updateAge(0)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-0" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-blue-100 transition-all" oninput="saveData(0)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-0" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-blue-100 transition-all resize-none" oninput="saveData(0)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-blue-50/30 rounded-2xl border border-blue-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-0" class="text-4xl font-black text-slate-800 tracking-tighter">84</div>
-                            <div class="text-[10px] font-bold text-blue-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-1" value="Tank 02" class="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-emerald-200 w-28" oninput="saveData(1)">
-                            <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-1" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-emerald-100 transition-all" oninput="updateSurvival(1)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-1" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-emerald-100 transition-all" oninput="updateSurvival(1)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-emerald-50/50 p-2 rounded-xl border border-emerald-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-1" class="text-sm font-bold text-emerald-600">4.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-1" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-emerald-100 transition-all" onchange="updateAge(1)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-1" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-emerald-100 transition-all" oninput="saveData(1)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-1" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-emerald-100 transition-all resize-none" oninput="saveData(1)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-emerald-50/30 rounded-2xl border border-emerald-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-1" class="text-4xl font-black text-slate-800 tracking-tighter">170</div>
-                            <div class="text-[10px] font-bold text-emerald-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-2" value="Tank 03" class="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-indigo-200 w-28" oninput="saveData(2)">
-                            <div class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-2" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-indigo-100 transition-all" oninput="updateSurvival(2)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-2" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-indigo-100 transition-all" oninput="updateSurvival(2)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-indigo-50/50 p-2 rounded-xl border border-indigo-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-2" class="text-sm font-bold text-indigo-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-2" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-indigo-100 transition-all" onchange="updateAge(2)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-2" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-indigo-100 transition-all" oninput="saveData(2)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-2" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-indigo-100 transition-all resize-none" oninput="saveData(2)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-indigo-50/30 rounded-2xl border border-indigo-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-2" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-indigo-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-3" value="Tank 04" class="bg-violet-50 text-violet-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-violet-200 w-28" oninput="saveData(3)">
-                            <div class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-3" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-violet-100 transition-all" oninput="updateSurvival(3)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-3" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-violet-100 transition-all" oninput="updateSurvival(3)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-violet-50/50 p-2 rounded-xl border border-violet-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-3" class="text-sm font-bold text-violet-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-3" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-violet-100 transition-all" onchange="updateAge(3)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-3" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-violet-100 transition-all" oninput="saveData(3)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-3" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-violet-100 transition-all resize-none" oninput="saveData(3)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-violet-50/30 rounded-2xl border border-violet-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-3" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-violet-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-4" value="Tank 05" class="bg-rose-50 text-rose-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-rose-200 w-28" oninput="saveData(4)">
-                            <div class="w-2 h-2 rounded-full bg-rose-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-4" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-rose-100 transition-all" oninput="updateSurvival(4)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-4" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-rose-100 transition-all" oninput="updateSurvival(4)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-rose-50/50 p-2 rounded-xl border border-rose-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-4" class="text-sm font-bold text-rose-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-4" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-rose-100 transition-all" onchange="updateAge(4)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-4" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-rose-100 transition-all" oninput="saveData(4)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-4" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-rose-100 transition-all resize-none" oninput="saveData(4)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-rose-50/30 rounded-2xl border border-rose-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-4" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-rose-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-5" value="Tank 06" class="bg-amber-50 text-amber-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-amber-200 w-28" oninput="saveData(5)">
-                            <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-5" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-amber-100 transition-all" oninput="updateSurvival(5)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-5" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-amber-100 transition-all" oninput="updateSurvival(5)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-amber-50/50 p-2 rounded-xl border border-amber-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-5" class="text-sm font-bold text-amber-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-5" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-amber-100 transition-all" onchange="updateAge(5)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-5" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-amber-100 transition-all" oninput="saveData(5)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-5" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-amber-100 transition-all resize-none" oninput="saveData(5)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-amber-50/30 rounded-2xl border border-amber-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-5" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-amber-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-6" value="Tank 07" class="bg-cyan-50 text-cyan-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-cyan-200 w-28" oninput="saveData(6)">
-                            <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-6" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-cyan-100 transition-all" oninput="updateSurvival(6)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-6" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-cyan-100 transition-all" oninput="updateSurvival(6)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-cyan-50/50 p-2 rounded-xl border border-cyan-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-6" class="text-sm font-bold text-cyan-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-6" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-cyan-100 transition-all" onchange="updateAge(6)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-6" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-cyan-100 transition-all" oninput="saveData(6)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-6" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-cyan-100 transition-all resize-none" oninput="saveData(6)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-cyan-50/30 rounded-2xl border border-cyan-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-6" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-cyan-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-7" value="Tank 08" class="bg-teal-50 text-teal-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-teal-200 w-28" oninput="saveData(7)">
-                            <div class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-7" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-teal-100 transition-all" oninput="updateSurvival(7)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-7" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-teal-100 transition-all" oninput="updateSurvival(7)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-teal-50/50 p-2 rounded-xl border border-teal-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-7" class="text-sm font-bold text-teal-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-7" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-teal-100 transition-all" onchange="updateAge(7)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-7" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-teal-100 transition-all" oninput="saveData(7)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-7" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-teal-100 transition-all resize-none" oninput="saveData(7)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-teal-50/30 rounded-2xl border border-teal-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-7" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-teal-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-8" value="Tank 09" class="bg-fuchsia-50 text-fuchsia-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-fuchsia-200 w-28" oninput="saveData(8)">
-                            <div class="w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-8" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-fuchsia-100 transition-all" oninput="updateSurvival(8)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-8" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-fuchsia-100 transition-all" oninput="updateSurvival(8)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-fuchsia-50/50 p-2 rounded-xl border border-fuchsia-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-8" class="text-sm font-bold text-fuchsia-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-8" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-fuchsia-100 transition-all" onchange="updateAge(8)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-8" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-fuchsia-100 transition-all" oninput="saveData(8)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-8" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-fuchsia-100 transition-all resize-none" oninput="saveData(8)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-fuchsia-50/30 rounded-2xl border border-fuchsia-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-8" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-fuchsia-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-9" value="Tank 10" class="bg-slate-50 text-slate-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-slate-200 w-28" oninput="saveData(9)">
-                            <div class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-9" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-slate-100 transition-all" oninput="updateSurvival(9)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-9" placeholder="0" class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-slate-100 transition-all" oninput="updateSurvival(9)">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between bg-slate-50/50 p-2 rounded-xl border border-slate-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-9" class="text-sm font-bold text-slate-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-9" class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-slate-100 transition-all" onchange="updateAge(9)">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-9" placeholder="場所" class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-slate-100 transition-all" oninput="saveData(9)">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-9" rows="2" placeholder="状態など..." class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-slate-100 transition-all resize-none" oninput="saveData(9)"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-slate-50/30 rounded-2xl border border-slate-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-9" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-slate-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                </div>
-
-        <footer class="mt-20 text-center">
-            <div class="inline-block px-8 py-3 bg-white rounded-full border border-slate-200 shadow-sm">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-[0.2em]">
-                    All data is synchronized with local storage
-                </p>
-            </div>
-        </footer>
+    <div id="loading" class="loading-overlay">
+        <div class="text-center">
+            <div class="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-xs font-bold text-slate-400 tracking-widest uppercase">同期中...</p>
+        </div>
     </div>
 
-    <script>
-        const tankCount = 10;
-        const appId = "unagi_tracker_v4";
+    <!-- 共有キー設定モーダル -->
+    <div id="sync-modal" class="modal">
+        <div class="bg-white p-6 rounded-3xl w-80 shadow-2xl">
+            <h3 class="text-lg font-bold mb-4">共有キーの設定</h3>
+            <p class="text-[10px] text-slate-500 mb-4">別の合言葉でデータを分けたい場合は入力してください。</p>
+            <input type="text" id="sync-key-input" placeholder="例: unagi" class="w-full border-2 border-slate-100 rounded-xl px-4 py-2 mb-4 focus:border-blue-300 outline-none">
+            <button onclick="saveSyncKey()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">設定を保存</button>
+            <button onclick="hideSyncModal()" class="w-full text-slate-400 text-xs mt-4">キャンセル</button>
+        </div>
+    </div>
 
+    <div class="max-w-[1600px] mx-auto">
+        <header class="text-center mb-8 pt-4 relative">
+            <button onclick="showSyncModal()" class="absolute right-0 top-0 p-2 bg-white rounded-full shadow-sm text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3y-3.5 3.5"/></svg>
+            </button>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-1">うなぎ仔魚日齢管理</h1>
+            <div id="current-date-display" class="text-lg font-bold text-blue-600">----/--/--</div>
+            <div id="sync-status" class="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-widest">合言葉: <span id="active-key-name">unagi</span></div>
+        </header>
+
+        <div id="tanks-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global environment variables
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'unagi-shared-v6';
+        
+        // Default sync key
+        let syncKey = localStorage.getItem('unagi_sync_key') || 'unagi';
+        
+        window.showSyncModal = () => { 
+            document.getElementById('sync-key-input').value = syncKey;
+            document.getElementById('sync-modal').style.display = 'flex'; 
+        };
+        window.hideSyncModal = () => { document.getElementById('sync-modal').style.display = 'none'; };
+        window.saveSyncKey = () => {
+            const val = document.getElementById('sync-key-input').value.trim();
+            if(val) {
+                localStorage.setItem('unagi_sync_key', val);
+                location.reload();
+            }
+        };
+
+        const tankCount = 10;
         function displayToday() {
             const now = new Date();
-            const y = now.getFullYear();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
             const days = ['日', '月', '火', '水', '木', '金', '土'];
-            const dayName = days[now.getDay()];
-            document.getElementById('current-date-display').innerText = `${y}年${m}月${d}日 (${dayName})`;
+            document.getElementById('current-date-display').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 (${days[now.getDay()]})`;
         }
 
-        function createTankCards() {
-            const container = document.getElementById('tanks-container');
-            const colors = ['blue', 'emerald', 'indigo', 'violet', 'rose', 'amber', 'cyan', 'teal', 'fuchsia', 'slate'];
-            
-            for (let i = 0; i < tankCount; i++) {
-                const color = colors[i % colors.length];
-                const card = `
-                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col">
-                        <div class="flex justify-between items-center mb-5">
-                            <input type="text" id="tank-label-${i}" value="Tank ${String(i+1).padStart(2, '0')}" 
-                                class="bg-${color}-50 text-${color}-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border-none focus:ring-2 focus:ring-${color}-200 w-28"
-                                oninput="saveData(${i})">
-                            <div class="w-2 h-2 rounded-full bg-${color}-400 animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-5 flex-grow">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Initial / 初回投入</label>
-                                    <input type="number" id="initial-${i}" placeholder="0" 
-                                        class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-${color}-100 transition-all" 
-                                        oninput="updateSurvival(${i})">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Current / 現在数</label>
-                                    <input type="number" id="current-count-${i}" placeholder="0" 
-                                        class="w-full text-lg font-semibold text-slate-700 bg-slate-50 border-none rounded-xl px-3 py-1 focus:ring-2 focus:ring-${color}-100 transition-all" 
-                                        oninput="updateSurvival(${i})">
-                                </div>
-                            </div>
+        // Firestore Path Helper (RULE 1: Must be /artifacts/{appId}/public/data/{collectionName})
+        // Correction: The path must be interpreted as collection / document / collection / document...
+        // To fix "must have an odd number of segments", we must ensure we use collection() for 5 segments
+        // Path: artifacts (1) / {appId} (2) / public (3) / data (4) / {syncKey} (5)
+        const getTankCollection = () => {
+            return collection(db, 'artifacts', appId, 'public', 'data', syncKey);
+        };
 
-                            <div class="flex items-center justify-between bg-${color}-50/50 p-2 rounded-xl border border-${color}-50">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Survival Rate / 残存率</span>
-                                <span id="rate-${i}" class="text-sm font-bold text-${color}-600">0.0%</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 gap-3">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Birth Date / 生誕日</label>
-                                    <input type="date" id="date-${i}" 
-                                        class="w-full bg-slate-50 border-none rounded-xl px-2 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-${color}-100 transition-all" 
-                                        onchange="updateAge(${i})">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Origin / 生誕地</label>
-                                    <input type="text" id="origin-${i}" placeholder="場所" 
-                                        class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-xs text-slate-600 focus:ring-2 focus:ring-${color}-100 transition-all" 
-                                        oninput="saveData(${i})">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Notes / 備考</label>
-                                <textarea id="note-${i}" rows="2" placeholder="状態など..." 
-                                    class="w-full bg-slate-50 border-none rounded-xl px-3 py-2 text-[11px] text-slate-600 focus:ring-2 focus:ring-${color}-100 transition-all resize-none" 
-                                    oninput="saveData(${i})"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="text-center py-5 bg-gradient-to-br from-white to-${color}-50/30 rounded-2xl border border-${color}-50">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Current Age</div>
-                            <div id="age-${i}" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
-                            <div class="text-[10px] font-bold text-${color}-500 mt-1 italic tracking-tight">Days Old</div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += card;
-            }
-        }
-
-        function calculateDays(birthDateStr) {
-            if (!birthDateStr) return "--";
-            const birthDate = new Date(birthDateStr);
-            const today = new Date();
-            birthDate.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
-            const diffTime = today - birthDate;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays >= 0 ? diffDays : "予定";
-        }
-
-        function updateSurvival(index) {
-            const initial = parseFloat(document.getElementById(`initial-${index}`).value) || 0;
-            const current = parseFloat(document.getElementById(`current-count-${index}`).value) || 0;
-            const rateDisplay = document.getElementById(`rate-${index}`);
-            
-            let rate = 0;
-            if (initial > 0) {
-                rate = (current / initial) * 100;
-            }
-            rateDisplay.innerText = rate.toFixed(1) + "%";
-            saveData(index);
-        }
-
-        function updateAge(index) {
-            const dateInput = document.getElementById(`date-${index}`);
-            const ageDisplay = document.getElementById(`age-${index}`);
-            if (dateInput && ageDisplay) {
-                ageDisplay.innerText = calculateDays(dateInput.value);
-                saveData(index);
-            }
-        }
-
-        function saveData(index) {
+        window.saveData = async (index) => {
             const el = (id) => document.getElementById(id);
             const data = {
                 tankLabel: el(`tank-label-${index}`).value,
@@ -644,39 +102,119 @@
                 currentCount: el(`current-count-${index}`).value,
                 birthDate: el(`date-${index}`).value,
                 origin: el(`origin-${index}`).value,
-                note: el(`note-${index}`).value
+                note: el(`note-${index}`).value,
+                updatedAt: new Date().toISOString()
             };
-            localStorage.setItem(`${appId}_tank_${index}`, JSON.stringify(data));
-        }
+            try {
+                // Rule: Save to doc under the specific syncKey collection
+                await setDoc(doc(getTankCollection(), `tank_${index}`), data, { merge: true });
+            } catch (e) { 
+                console.error("Save Error:", e); 
+            }
+        };
 
-        function loadData() {
+        window.updateSurvival = (index) => {
+            const init = parseFloat(document.getElementById(`initial-${index}`).value) || 0;
+            const curr = parseFloat(document.getElementById(`current-count-${index}`).value) || 0;
+            document.getElementById(`rate-${index}`).innerText = (init > 0 ? (curr/init*100) : 0).toFixed(1) + "%";
+            window.saveData(index);
+        };
+
+        window.updateAge = (index) => {
+            const birth = document.getElementById(`date-${index}`).value;
+            if (birth) {
+                const bDate = new Date(birth); bDate.setHours(0,0,0,0);
+                const today = new Date(); today.setHours(0,0,0,0);
+                document.getElementById(`age-${index}`).innerText = Math.max(0, Math.floor((today-bDate)/86400000));
+            }
+            window.saveData(index);
+        };
+
+        function createUI() {
+            const container = document.getElementById('tanks-container');
+            const colors = ['blue', 'emerald', 'indigo', 'violet', 'rose', 'amber', 'cyan', 'teal', 'fuchsia', 'slate'];
             for (let i = 0; i < tankCount; i++) {
-                const saved = localStorage.getItem(`${appId}_tank_${i}`);
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    const el = (id) => document.getElementById(id);
-                    if (el(`tank-label-${i}`)) {
-                        el(`tank-label-${i}`).value = data.tankLabel || `Tank ${String(i+1).padStart(2, '0')}`;
-                        el(`initial-${i}`).value = data.initial || "";
-                        el(`current-count-${i}`).value = data.currentCount || "";
-                        el(`date-${i}`).value = data.birthDate || "";
-                        el(`origin-${i}`).value = data.origin || "";
-                        el(`note-${i}`).value = data.note || "";
-                        updateAge(i);
-                        updateSurvival(i);
-                    }
-                }
+                const c = colors[i % colors.length];
+                container.innerHTML += `
+                <div class="bg-white rounded-[1.5rem] shadow-sm border border-slate-200 p-4 unagi-card">
+                    <div class="flex justify-between items-center mb-4">
+                        <input type="text" id="tank-label-${i}" value="Tank ${String(i+1).padStart(2,'0')}" class="bg-${c}-50 text-${c}-600 px-3 py-1 rounded-full text-[10px] font-bold border-none w-24" oninput="saveData(${i})">
+                        <div class="w-1.5 h-1.5 rounded-full bg-${c}-400"></div>
+                    </div>
+                    <div class="space-y-3 mb-4">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="initial-${i}" placeholder="投入" class="w-full bg-slate-50 rounded-lg px-2 py-1.5 text-sm font-bold border-none" oninput="updateSurvival(${i})">
+                            <input type="number" id="current-count-${i}" placeholder="生存" class="w-full bg-slate-50 rounded-lg px-2 py-1.5 text-sm font-bold border-none" oninput="updateSurvival(${i})">
+                        </div>
+                        <div class="flex justify-between bg-${c}-50/30 p-2 rounded-lg text-[10px] font-bold border border-${c}-50/50">
+                            <span class="text-slate-400">残存率</span><span id="rate-${i}" class="text-${c}-600 text-xs">0.0%</span>
+                        </div>
+                        <input type="date" id="date-${i}" class="w-full bg-slate-50 rounded-lg px-2 py-1 text-xs border-none" onchange="updateAge(${i})">
+                        <input type="text" id="origin-${i}" placeholder="生誕地" class="w-full bg-slate-50 rounded-lg px-2 py-1 text-xs border-none" oninput="saveData(${i})">
+                        <textarea id="note-${i}" rows="2" placeholder="備考..." class="w-full bg-slate-50 rounded-lg px-2 py-1 text-[10px] border-none resize-none" oninput="saveData(${i})"></textarea>
+                    </div>
+                    <div class="text-center py-3 bg-gradient-to-br from-white to-${c}-50/30 rounded-xl border border-${c}-50">
+                        <div id="age-${i}" class="text-3xl font-black text-slate-800 tracking-tighter">--</div>
+                        <div class="text-[9px] font-bold text-${c}-500 uppercase">Days Old</div>
+                    </div>
+                </div>`;
             }
         }
 
+        async function startApp() {
+            document.getElementById('active-key-name').innerText = syncKey;
+            
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth Error:", err);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // Corrected: Watch the specific collection for the syncKey
+                    const colRef = getTankCollection();
+                    
+                    onSnapshot(colRef, (snap) => {
+                        snap.docChanges().forEach(change => {
+                            const docId = change.doc.id; // docId is "tank_0", "tank_1", etc.
+                            if (docId.startsWith('tank_')) {
+                                const idx = parseInt(docId.split('_').pop());
+                                const data = change.doc.data();
+                                const el = (id) => document.getElementById(id);
+                                
+                                if (document.activeElement !== el(`tank-label-${idx}`)) el(`tank-label-${idx}`).value = data.tankLabel || "";
+                                if (document.activeElement !== el(`initial-${idx}`)) el(`initial-${idx}`).value = data.initial || "";
+                                if (document.activeElement !== el(`current-count-${idx}`)) el(`current-count-${idx}`).value = data.currentCount || "";
+                                if (document.activeElement !== el(`date-${idx}`)) el(`date-${idx}`).value = data.birthDate || "";
+                                if (document.activeElement !== el(`origin-${idx}`)) el(`origin-${idx}`).value = data.origin || "";
+                                if (document.activeElement !== el(`note-${idx}`)) el(`note-${idx}`).value = data.note || "";
+                                
+                                const iV = parseFloat(data.initial) || 0, cV = parseFloat(data.currentCount) || 0;
+                                el(`rate-${idx}`).innerText = (iV > 0 ? (cV/iV*100) : 0).toFixed(1) + "%";
+                                if (data.birthDate) {
+                                    const b = new Date(data.birthDate); b.setHours(0,0,0,0);
+                                    const t = new Date(); t.setHours(0,0,0,0);
+                                    el(`age-${idx}`).innerText = Math.max(0, Math.floor((t-b)/86400000));
+                                }
+                            }
+                        });
+                        document.getElementById('loading').style.display = 'none';
+                    }, (error) => {
+                        console.error("Snapshot Error:", error);
+                        document.getElementById('loading').style.display = 'none';
+                    });
+                }
+            });
+        }
+
         displayToday();
-        createTankCards();
-        loadData();
-
-        setInterval(() => {
-            displayToday();
-            for (let i = 0; i < tankCount; i++) updateAge(i);
-        }, 3600000);
+        createUI();
+        startApp();
     </script>
-
-</body></html>
+</body>
+</html>
