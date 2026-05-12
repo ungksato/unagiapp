@@ -15,62 +15,80 @@
         body { font-family: 'Kiwi Maru', serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
         .unagi-card { transition: all 0.2s ease; }
         input, textarea { font-size: 16px !important; }
-        .loading-overlay { position: fixed; inset: 0; background: #ffffff; display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200; backdrop-filter: blur(4px); }
+        /* Chrome, Safari, Edge, Opera の入力矢印を消す */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body class="p-4 md:p-10 text-slate-800">
     <div id="loading" class="loading-overlay">
         <div class="text-center">
-            <div class="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p class="text-xs font-bold text-slate-400 tracking-widest uppercase">同期中...</p>
+            <div class="inline-block w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p id="loading-text" class="text-xs font-bold text-slate-500 tracking-widest uppercase">同期中...</p>
+            <button id="force-close-loader" onclick="hideLoader()" class="mt-6 text-[10px] text-slate-400 underline hidden">強制的に開始する</button>
         </div>
     </div>
 
-    <!-- 共有キー設定モーダル -->
     <div id="sync-modal" class="modal">
         <div class="bg-white p-6 rounded-3xl w-80 shadow-2xl">
-            <h3 class="text-lg font-bold mb-4">共有キーの設定</h3>
-            <p class="text-[10px] text-slate-500 mb-4">別の合言葉でデータを分けたい場合は入力してください。</p>
-            <input type="text" id="sync-key-input" placeholder="例: unagi" class="w-full border-2 border-slate-100 rounded-xl px-4 py-2 mb-4 focus:border-blue-300 outline-none">
-            <button onclick="saveSyncKey()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">設定を保存</button>
+            <h3 class="text-lg font-bold mb-4 text-slate-800">共有キーの設定</h3>
+            <p class="text-[11px] text-slate-500 mb-4 leading-relaxed">同じ「合言葉」を入力した端末同士でデータが同期されます。</p>
+            <input type="text" id="sync-key-input" placeholder="例: my-unagi-farm" class="w-full border-2 border-slate-100 rounded-xl px-4 py-3 mb-4 focus:border-blue-400 outline-none transition-colors">
+            <button onclick="saveSyncKey()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all active:scale-95">設定を保存して更新</button>
             <button onclick="hideSyncModal()" class="w-full text-slate-400 text-xs mt-4">キャンセル</button>
         </div>
     </div>
 
     <div class="max-w-[1600px] mx-auto">
         <header class="text-center mb-8 pt-4 relative">
-            <button onclick="showSyncModal()" class="absolute right-0 top-0 p-2 bg-white rounded-full shadow-sm text-slate-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3y-3.5 3.5"/></svg>
+            <button onclick="showSyncModal()" class="absolute right-0 top-0 p-3 bg-white rounded-full shadow-sm text-slate-400 hover:text-blue-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-1">うなぎ仔魚日齢管理</h1>
-            <div id="current-date-display" class="text-lg font-bold text-blue-600">----/--/--</div>
-            <div id="sync-status" class="text-[9px] text-slate-400 font-bold mt-1 uppercase tracking-widest">合言葉: <span id="active-key-name">unagi</span></div>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-1">うなぎ仔魚日齢管理</h1>
+            <div id="current-date-display" class="text-sm md:text-lg font-bold text-blue-600">----/--/--</div>
+            <div id="sync-status" class="text-[9px] text-slate-400 font-bold mt-2 uppercase tracking-widest flex items-center justify-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                合言葉: <span id="active-key-name" class="text-slate-600">unagi</span>
+            </div>
         </header>
 
-        <div id="tanks-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"></div>
+        <div id="tanks-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 pb-20"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration
+        // Firebase Configuration from environment
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'unagi-shared-v6';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'unagi-shared-v10';
         
-        // Default sync key
+        // Sync Logic
         let syncKey = localStorage.getItem('unagi_sync_key') || 'unagi';
-        
+        const tankCount = 10;
+
+        window.hideLoader = () => {
+            document.getElementById('loading').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 300);
+        };
+
         window.showSyncModal = () => { 
             document.getElementById('sync-key-input').value = syncKey;
             document.getElementById('sync-modal').style.display = 'flex'; 
         };
-        window.hideSyncModal = () => { document.getElementById('sync-modal').style.display = 'none'; };
+
+        window.hideSyncModal = () => { 
+            document.getElementById('sync-modal').style.display = 'none'; 
+        };
+
         window.saveSyncKey = () => {
             const val = document.getElementById('sync-key-input').value.trim();
             if(val) {
@@ -79,17 +97,21 @@
             }
         };
 
-        const tankCount = 10;
-        function displayToday() {
-            const now = new Date();
-            const days = ['日', '月', '火', '水', '木', '金', '土'];
-            document.getElementById('current-date-display').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 (${days[now.getDay()]})`;
-        }
-
-        // Firestore Path Helper (5 segments for a Document = artifacts/appId/public/data/syncKey/tankId)
-        // This ensures the parent is a collection (odd segments: 1, 3, 5)
         const getTankDocRef = (index) => {
+            // Path: artifacts/{appId}/public/data/{syncKey}/{tankId}
             return doc(db, 'artifacts', appId, 'public', 'data', syncKey, `tank_${index}`);
+        };
+
+        // UI update based on date
+        const calculateAge = (birthDateStr) => {
+            if (!birthDateStr) return "--";
+            const bDate = new Date(birthDateStr);
+            bDate.setHours(0,0,0,0);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const diffTime = today - bDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            return Math.max(0, diffDays);
         };
 
         window.saveData = async (index) => {
@@ -103,115 +125,192 @@
                 note: el(`note-${index}`).value,
                 updatedAt: new Date().toISOString()
             };
+
             try {
+                // 即座に計算してUIを更新（楽観的UI更新）
+                const age = calculateAge(data.birthDate);
+                el(`age-${index}`).innerText = age;
+                const iV = parseFloat(data.initial) || 0;
+                const cV = parseFloat(data.currentCount) || 0;
+                el(`rate-${index}`).innerText = (iV > 0 ? (cV/iV*100) : 0).toFixed(1) + "%";
+
+                // Firebaseへ保存
                 await setDoc(getTankDocRef(index), data, { merge: true });
-            } catch (e) { 
-                console.error("Save Error:", e); 
+            } catch (e) {
+                console.error("Firestore Save Error:", e);
             }
-        };
-
-        window.updateSurvival = (index) => {
-            const init = parseFloat(document.getElementById(`initial-${index}`).value) || 0;
-            const curr = parseFloat(document.getElementById(`current-count-${index}`).value) || 0;
-            document.getElementById(`rate-${index}`).innerText = (init > 0 ? (curr/init*100) : 0).toFixed(1) + "%";
-            window.saveData(index);
-        };
-
-        window.updateAge = (index) => {
-            const birth = document.getElementById(`date-${index}`).value;
-            if (birth) {
-                const bDate = new Date(birth); bDate.setHours(0,0,0,0);
-                const today = new Date(); today.setHours(0,0,0,0);
-                document.getElementById(`age-${index}`).innerText = Math.max(0, Math.floor((today-bDate)/86400000));
-            }
-            window.saveData(index);
         };
 
         function createUI() {
             const container = document.getElementById('tanks-container');
-            const colors = ['blue', 'emerald', 'indigo', 'violet', 'rose', 'amber', 'cyan', 'teal', 'fuchsia', 'slate'];
+            const colorThemes = [
+                { border: '#3b82f6', bg: '#eff6ff', text: '#1d4ed8' }, // Blue
+                { border: '#10b981', bg: '#ecfdf5', text: '#047857' }, // Emerald
+                { border: '#6366f1', bg: '#eef2ff', text: '#4338ca' }, // Indigo
+                { border: '#8b5cf6', bg: '#f5f3ff', text: '#6d28d9' }, // Violet
+                { border: '#f43f5e', bg: '#fff1f2', text: '#be123c' }, // Rose
+                { border: '#f59e0b', bg: '#fffbeb', text: '#b45309' }, // Amber
+                { border: '#06b6d4', bg: '#ecfeff', text: '#0e7490' }, // Cyan
+                { border: '#14b8a6', bg: '#f0fdfa', text: '#0f766e' }, // Teal
+                { border: '#d946ef', bg: '#fdf4ff', text: '#a21caf' }, // Fuchsia
+                { border: '#64748b', bg: '#f8fafc', text: '#334155' }  // Slate
+            ];
+
+            let html = '';
             for (let i = 0; i < tankCount; i++) {
-                const c = colors[i % colors.length];
-                container.innerHTML += `
-                <div class="bg-white rounded-[1.5rem] shadow-sm border border-slate-200 p-4 unagi-card">
-                    <div class="flex justify-between items-center mb-4">
-                        <input type="text" id="tank-label-${i}" value="Tank ${String(i+1).padStart(2,'0')}" class="bg-${c}-50 text-${c}-600 px-3 py-1 rounded-full text-[10px] font-bold border-none w-24" oninput="saveData(${i})">
-                        <div class="w-1.5 h-1.5 rounded-full bg-${c}-400"></div>
+                const theme = colorThemes[i % colorThemes.length];
+                html += `
+                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-5 unagi-card flex flex-col gap-4">
+                    <div class="flex justify-between items-center">
+                        <input type="text" id="tank-label-${i}" value="Tank ${String(i+1).padStart(2,'0')}" 
+                               style="background-color: ${theme.bg}; color: ${theme.text}"
+                               class="px-4 py-1.5 rounded-full text-[11px] font-bold border-none w-28 focus:ring-2 focus:ring-blue-200 outline-none" 
+                               onchange="saveData(${i})">
+                        <div class="w-2 h-2 rounded-full" style="background-color: ${theme.border}"></div>
                     </div>
-                    <div class="space-y-3 mb-4">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="number" id="initial-${i}" placeholder="投入" class="w-full bg-slate-50 rounded-lg px-2 py-1.5 text-sm font-bold border-none" oninput="updateSurvival(${i})">
-                            <input type="number" id="current-count-${i}" placeholder="生存" class="w-full bg-slate-50 rounded-lg px-2 py-1.5 text-sm font-bold border-none" oninput="updateSurvival(${i})">
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-400 ml-1 mb-1 block">投入数</label>
+                                <input type="number" id="initial-${i}" placeholder="0" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-sm font-bold border-none focus:bg-white transition-colors outline-none" oninput="saveData(${i})">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-400 ml-1 mb-1 block">生存数</label>
+                                <input type="number" id="current-count-${i}" placeholder="0" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-sm font-bold border-none focus:bg-white transition-colors outline-none" oninput="saveInputWithValidation(${i})">
+                            </div>
                         </div>
-                        <div class="flex justify-between bg-${c}-50/30 p-2 rounded-lg text-[10px] font-bold border border-${c}-50/50">
-                            <span class="text-slate-400">残存率</span><span id="rate-${i}" class="text-${c}-600 text-xs">0.0%</span>
+
+                        <div class="flex justify-between items-center p-3 rounded-xl border border-slate-100" style="background-color: ${theme.bg}22">
+                            <span class="text-[10px] font-bold text-slate-400">生存率</span>
+                            <span id="rate-${i}" class="font-black text-sm" style="color: ${theme.text}">0.0%</span>
                         </div>
-                        <input type="date" id="date-${i}" class="w-full bg-slate-50 rounded-lg px-2 py-1 text-xs border-none" onchange="updateAge(${i})">
-                        <input type="text" id="origin-${i}" placeholder="生誕地" class="w-full bg-slate-50 rounded-lg px-2 py-1 text-xs border-none" oninput="saveData(${i})">
-                        <textarea id="note-${i}" rows="2" placeholder="備考..." class="w-full bg-slate-50 rounded-lg px-2 py-1 text-[10px] border-none resize-none" oninput="saveData(${i})"></textarea>
+
+                        <div>
+                            <label class="text-[9px] font-bold text-slate-400 ml-1 mb-1 block">生誕日</label>
+                            <input type="date" id="date-${i}" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-xs border-none outline-none" onchange="saveData(${i})">
+                        </div>
+
+                        <input type="text" id="origin-${i}" placeholder="生誕地/由来" class="w-full bg-slate-50 rounded-xl px-3 py-2 text-xs border-none outline-none" onchange="saveData(${i})">
+                        
+                        <textarea id="note-${i}" rows="2" placeholder="メモ..." class="w-full bg-slate-50 rounded-xl px-3 py-2 text-[11px] border-none resize-none outline-none" onchange="saveData(${i})"></textarea>
                     </div>
-                    <div class="text-center py-3 bg-gradient-to-br from-white to-${c}-50/30 rounded-xl border border-${c}-50">
-                        <div id="age-${i}" class="text-3xl font-black text-slate-800 tracking-tighter">--</div>
-                        <div class="text-[9px] font-bold text-${c}-500 uppercase">Days Old</div>
+
+                    <div class="mt-auto pt-2">
+                        <div class="text-center py-5 rounded-2xl border" style="border-color: ${theme.bg}; background: linear-gradient(135deg, #fff, ${theme.bg}88)">
+                            <div id="age-${i}" class="text-4xl font-black text-slate-800 tracking-tighter">--</div>
+                            <div class="text-[10px] font-bold uppercase tracking-widest mt-1" style="color: ${theme.text}aa">Days Old</div>
+                        </div>
                     </div>
                 </div>`;
             }
+            container.innerHTML = html;
         }
+
+        window.saveInputWithValidation = (i) => {
+            // 数値が変更されるたびに保存すると負荷がかかるため、入力中のバリデーションのみ
+            const initial = parseFloat(document.getElementById(`initial-${i}`).value) || 0;
+            const current = parseFloat(document.getElementById(`current-count-${i}`).value) || 0;
+            if (current > initial && initial > 0) {
+                // 生存数が投入数を超えた場合は赤くするなど視覚的フィードバック
+                document.getElementById(`current-count-${i}`).classList.add('text-red-500');
+            } else {
+                document.getElementById(`current-count-${i}`).classList.remove('text-red-500');
+            }
+            saveData(i);
+        };
 
         async function startApp() {
             document.getElementById('active-key-name').innerText = syncKey;
             
+            // バックアップ: もし5秒経っても同期が終わらなければ「強制終了ボタン」を出す
+            setTimeout(() => {
+                const btn = document.getElementById('force-close-loader');
+                if (btn) btn.classList.remove('hidden');
+                document.getElementById('loading-text').innerText = '接続に時間がかかっています...';
+            }, 5000);
+
             try {
+                let user;
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                    const result = await signInWithCustomToken(auth, __initial_auth_token);
+                    user = result.user;
                 } else {
-                    await signInAnonymously(auth);
+                    const result = await signInAnonymously(auth);
+                    user = result.user;
                 }
+                console.log("Authenticated as:", user.uid);
+
+                // Auth状態の監視
+                onAuthStateChanged(auth, (currentUser) => {
+                    if (currentUser) {
+                        setupRealtimeSync();
+                    } else {
+                        console.error("Auth Lost");
+                        document.getElementById('loading-text').innerText = '認証エラーが発生しました';
+                    }
+                });
+
             } catch (err) {
                 console.error("Auth Error:", err);
+                hideLoader();
             }
+        }
 
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    // Watch the collection: artifacts/{appId}/public/data/{syncKey}
-                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', syncKey);
-                    
-                    onSnapshot(colRef, (snap) => {
-                        snap.docChanges().forEach(change => {
-                            const docId = change.doc.id; 
-                            if (docId.startsWith('tank_')) {
-                                const idx = parseInt(docId.split('_').pop());
-                                const data = change.doc.data();
-                                const el = (id) => document.getElementById(id);
-                                
-                                if (document.activeElement !== el(`tank-label-${idx}`)) el(`tank-label-${idx}`).value = data.tankLabel || "";
-                                if (document.activeElement !== el(`initial-${idx}`)) el(`initial-${idx}`).value = data.initial || "";
-                                if (document.activeElement !== el(`current-count-${idx}`)) el(`current-count-${idx}`).value = data.currentCount || "";
-                                if (document.activeElement !== el(`date-${idx}`)) el(`date-${idx}`).value = data.birthDate || "";
-                                if (document.activeElement !== el(`origin-${idx}`)) el(`origin-${idx}`).value = data.origin || "";
-                                if (document.activeElement !== el(`note-${idx}`)) el(`note-${idx}`).value = data.note || "";
-                                
-                                const iV = parseFloat(data.initial) || 0, cV = parseFloat(data.currentCount) || 0;
-                                el(`rate-${idx}`).innerText = (iV > 0 ? (cV/iV*100) : 0).toFixed(1) + "%";
-                                if (data.birthDate) {
-                                    const b = new Date(data.birthDate); b.setHours(0,0,0,0);
-                                    const t = new Date(); t.setHours(0,0,0,0);
-                                    el(`age-${idx}`).innerText = Math.max(0, Math.floor((t-b)/86400000));
-                                }
-                            }
-                        });
-                        document.getElementById('loading').style.display = 'none';
-                    }, (error) => {
-                        console.error("Snapshot Error:", error);
-                        document.getElementById('loading').style.display = 'none';
-                    });
-                }
+        function setupRealtimeSync() {
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', syncKey);
+            
+            // スナップショットの購読
+            const unsubscribe = onSnapshot(colRef, (snap) => {
+                console.log("Data received, count:", snap.size);
+                
+                snap.docChanges().forEach(change => {
+                    const docId = change.doc.id; 
+                    if (docId.startsWith('tank_')) {
+                        const idx = parseInt(docId.split('_').pop());
+                        if (isNaN(idx) || idx >= tankCount) return;
+
+                        const data = change.doc.data();
+                        const el = (id) => document.getElementById(id);
+                        if (!el(`tank-label-${idx}`)) return;
+
+                        // 入力中のフィールドは上書きしない（フォーカス時を避ける）
+                        if (document.activeElement !== el(`tank-label-${idx}`)) el(`tank-label-${idx}`).value = data.tankLabel || `Tank ${String(idx+1).padStart(2,'0')}`;
+                        if (document.activeElement !== el(`initial-${idx}`)) el(`initial-${idx}`).value = data.initial || "";
+                        if (document.activeElement !== el(`current-count-${idx}`)) el(`current-count-${idx}`).value = data.currentCount || "";
+                        if (document.activeElement !== el(`date-${idx}`)) el(`date-${idx}`).value = data.birthDate || "";
+                        if (document.activeElement !== el(`origin-${idx}`)) el(`origin-${idx}`).value = data.origin || "";
+                        if (document.activeElement !== el(`note-${idx}`)) el(`note-${idx}`).value = data.note || "";
+                        
+                        // 表示専用データの更新
+                        const age = calculateAge(data.birthDate);
+                        el(`age-${idx}`).innerText = age;
+                        const iV = parseFloat(data.initial) || 0;
+                        const cV = parseFloat(data.currentCount) || 0;
+                        el(`rate-${idx}`).innerText = (iV > 0 ? (cV/iV*100) : 0).toFixed(1) + "%";
+                    }
+                });
+
+                // 最初の読み込みが完了したらローダーを隠す
+                hideLoader();
+            }, (error) => {
+                console.error("Firestore Error:", error);
+                hideLoader(); // エラー時もとりあえず画面は見せる
             });
         }
 
-        displayToday();
-        createUI();
-        startApp();
+        // 日付表示
+        function displayToday() {
+            const now = new Date();
+            const days = ['日', '月', '火', '水', '木', '金', '土'];
+            document.getElementById('current-date-display').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 (${days[now.getDay()]})`;
+        }
+
+        window.onload = () => {
+            displayToday();
+            createUI();
+            startApp();
+        };
     </script>
 </body>
 </html>
